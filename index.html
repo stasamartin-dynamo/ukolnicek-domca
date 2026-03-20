@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Domčův Úkolníček</title>
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Domčův Úkolníček">
+    <meta name="theme-color" content="#0F0F1A">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0F0F1A; --bg2: #1A1A2E; --bg3: #252540; --card: #1E1E35;
+            --glass-border: rgba(255,255,255,0.08);
+            --accent: #00D4AA; --accent-glow: rgba(0,212,170,0.15);
+            --accent2: #7C5CFC; --accent2-glow: rgba(124,92,252,0.15);
+            --red: #FF4757; --red-glow: rgba(255,71,87,0.15);
+            --gold: #FFD166; --gold-glow: rgba(255,209,102,0.15);
+            --text: #EEEEF0; --text2: #9999B0; --text3: #5E5E7A;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+        .login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); position: relative; overflow: hidden; }
+        .login-screen::before { content: ''; position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); top: 10%; left: -10%; pointer-events: none; }
+        .login-screen::after { content: ''; position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, var(--accent2-glow) 0%, transparent 70%); bottom: 5%; right: -15%; pointer-events: none; }
+        .login-logo { font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 0 20px rgba(0,212,170,0.3)); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+        .login-title { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+        .login-subtitle { font-size: 14px; color: var(--text2); margin-bottom: 48px; letter-spacing: 0.5px; }
+        .login-buttons { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; z-index: 1; }
+        .login-btn { display: flex; align-items: center; gap: 16px; padding: 18px 22px; border: 1px solid var(--glass-border); border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.25s; }
+        .login-btn:active { transform: scale(0.97); }
+        .login-btn.child { background: var(--card); color: var(--accent); border-color: rgba(0,212,170,0.2); }
+        .login-btn.child:active { background: rgba(0,212,170,0.1); border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); }
+        .login-btn.parent { background: var(--card); color: var(--accent2); border-color: rgba(124,92,252,0.2); }
+        .login-btn.parent:active { background: rgba(124,92,252,0.1); border-color: var(--accent2); box-shadow: 0 0 30px var(--accent2-glow); }
+        .login-btn .emoji { font-size: 28px; }
+
+        .pin-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+        .pin-back { position: absolute; top: 16px; left: 16px; background: var(--card); border: 1px solid var(--glass-border); border-radius: 12px; width: 42px; height: 42px; font-size: 18px; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .pin-avatar { font-size: 52px; margin-bottom: 12px; }
+        .pin-label { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .pin-hint { font-size: 13px; color: var(--text3); margin-bottom: 28px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        .pin-dots { display: flex; gap: 14px; margin-bottom: 36px; }
+        .pin-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--bg3); border: 2px solid var(--text3); transition: all 0.2s; }
+        .pin-dot.filled { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); transform: scale(1.15); }
+        .pin-dot.error { background: var(--red); border-color: var(--red); box-shadow: 0 0 12px var(--red-glow); animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+        .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; width: 100%; }
+        .pin-key { height: 58px; border: 1px solid var(--glass-border); border-radius: 14px; background: var(--card); font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.15s; }
+        .pin-key:active { transform: scale(0.93); background: var(--bg3); border-color: var(--accent); }
+        .pin-key.empty { background: transparent; border-color: transparent; cursor: default; }
+        .pin-key.backspace { font-size: 20px; color: var(--text2); }
+
+        .app { max-width: 480px; margin: 0 auto; padding: 0 16px 100px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; position: sticky; top: 0; background: rgba(15,15,26,0.85); backdrop-filter: blur(16px); z-index: 10; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header-avatar { font-size: 28px; }
+        .header-name { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; }
+        .header-role { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .logout-btn { background: var(--card); border: 1px solid var(--glass-border); border-radius: 10px; padding: 7px 14px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: var(--text3); cursor: pointer; }
+
+        .wallet { background: var(--card); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px 24px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
+        .wallet::before { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%); pointer-events: none; }
+        .wallet-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+        .wallet-amount { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 700; color: var(--gold); }
+        .wallet-currency { font-size: 18px; font-weight: 600; color: var(--text2); margin-left: 4px; }
+        .wallet-icon { font-size: 40px; opacity: 0.8; }
+
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; text-align: center; }
+        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+        .stat-value.green { color: var(--accent); }
+        .stat-value.gold { color: var(--gold); }
+
+        .week-nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 14px; }
+        .week-nav-btn { background: var(--card); border: 1px solid var(--glass-border); border-radius: 10px; width: 36px; height: 36px; font-size: 14px; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .week-label { font-size: 13px; font-weight: 600; color: var(--text2); }
+
+        .day-tabs { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+        .day-tabs::-webkit-scrollbar { display: none; }
+        .day-tab { flex-shrink: 0; padding: 10px 14px; border: 1px solid var(--glass-border); border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--card); color: var(--text3); transition: all 0.2s; }
+        .day-tab.active { background: var(--accent); color: #0F0F1A; border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); font-weight: 700; }
+        .day-tab.today:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+        .tasks-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .tasks-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; }
+        .add-task-btn { background: var(--accent); color: #0F0F1A; border: none; border-radius: 10px; padding: 8px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px var(--accent-glow); }
+        .add-task-btn:active { transform: scale(0.95); }
+
+        .task-list { display: flex; flex-direction: column; gap: 8px; }
+        .task-card { background: var(--card); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; }
+        .task-card.completed { border-color: rgba(0,212,170,0.2); background: rgba(0,212,170,0.05); }
+        .task-card.rejected { border-color: rgba(255,71,87,0.2); background: rgba(255,71,87,0.05); }
+        .task-checkbox { width: 32px; height: 32px; border-radius: 10px; border: 2px solid var(--text3); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; flex-shrink: 0; transition: all 0.2s; font-weight: 700; }
+        .task-checkbox.checked { background: var(--accent); border-color: var(--accent); color: #0F0F1A; box-shadow: 0 0 12px var(--accent-glow); }
+        .task-checkbox.approved { background: var(--accent); border-color: var(--accent); color: #0F0F1A; box-shadow: 0 0 12px var(--accent-glow); }
+        .task-checkbox.rejected { background: var(--red); border-color: var(--red); color: white; box-shadow: 0 0 12px var(--red-glow); }
+        .task-info { flex: 1; }
+        .task-name { font-size: 14px; font-weight: 600; }
+        .task-status { font-size: 11px; font-weight: 600; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .task-status.pending { color: var(--gold); }
+        .task-status.approved { color: var(--accent); }
+        .task-status.rejected { color: var(--red); }
+        .task-actions { display: flex; gap: 6px; }
+        .task-action-btn { width: 36px; height: 36px; border: 1px solid var(--glass-border); border-radius: 10px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; font-weight: 700; }
+        .task-action-btn:active { transform: scale(0.9); }
+        .task-action-btn.approve { color: var(--accent); border-color: rgba(0,212,170,0.3); }
+        .task-action-btn.reject { color: var(--red); border-color: rgba(255,71,87,0.3); }
+        .task-action-btn.delete { color: var(--text3); }
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
+        .empty-state .emoji { font-size: 40px; margin-bottom: 10px; }
+        .empty-state p { font-weight: 600; font-size: 14px; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal { background: var(--bg2); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; width: 100%; max-width: 360px; transform: translateY(20px); transition: transform 0.2s; }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+        .modal-input { width: 100%; padding: 12px 16px; border: 2px solid var(--bg3); border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; color: var(--text); background: var(--bg); margin-bottom: 14px; outline: none; }
+        .modal-input:focus { border-color: var(--accent); }
+        .modal-input::placeholder { color: var(--text3); }
+        .modal-buttons { display: flex; gap: 8px; }
+        .modal-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .modal-btn.cancel { background: var(--bg3); color: var(--text2); }
+        .modal-btn.confirm { background: var(--accent); color: #0F0F1A; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--card); border: 1px solid var(--glass-border); color: var(--text); padding: 12px 22px; border-radius: 14px; font-weight: 700; font-size: 14px; z-index: 200; transition: transform 0.3s; white-space: nowrap; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+    <div class="login-logo">⚡</div>
+    <div class="login-title">Domčův Úkolníček</div>
+    <div class="login-subtitle">Vyber svůj profil</div>
+    <div class="login-buttons">
+        <button class="login-btn child" onclick="showPin('child')"><span class="emoji">👦</span><span>Dominiček</span></button>
+        <button class="login-btn parent" onclick="showPin('parent')"><span class="emoji">🔐</span><span>Rodiče</span></button>
+    </div>
+</div>
+<div id="pinScreen" class="pin-screen" style="display:none;">
+    <button class="pin-back" onclick="showLogin()">←</button>
+    <div class="pin-avatar" id="pinAvatar">👦</div>
+    <div class="pin-label" id="pinLabel">Dominiček</div>
+    <div class="pin-hint">Zadej PIN</div>
+    <div class="pin-dots"><div class="pin-dot" id="dot0"></div><div class="pin-dot" id="dot1"></div><div class="pin-dot" id="dot2"></div><div class="pin-dot" id="dot3"></div></div>
+    <div class="pin-keypad">
+        <button class="pin-key" onclick="pressKey('1')">1</button><button class="pin-key" onclick="pressKey('2')">2</button><button class="pin-key" onclick="pressKey('3')">3</button>
+        <button class="pin-key" onclick="pressKey('4')">4</button><button class="pin-key" onclick="pressKey('5')">5</button><button class="pin-key" onclick="pressKey('6')">6</button>
+        <button class="pin-key" onclick="pressKey('7')">7</button><button class="pin-key" onclick="pressKey('8')">8</button><button class="pin-key" onclick="pressKey('9')">9</button>
+        <button class="pin-key empty"></button><button class="pin-key" onclick="pressKey('0')">0</button><button class="pin-key backspace" onclick="pressBackspace()">⌫</button>
+    </div>
+</div>
+<div id="appScreen" style="display:none;">
+    <div class="app">
+        <div class="header">
+            <div class="header-left"><span class="header-avatar" id="appAvatar">👦</span><div><div class="header-name" id="appName">Dominiček</div><div class="header-role" id="appRole">Plnitel úkolů</div></div></div>
+            <button class="logout-btn" onclick="showLogin()">Odhlásit</button>
+        </div>
+        <div class="wallet"><div><div class="wallet-label">Pokladnička</div><div class="wallet-amount" id="walletAmount">0 <span class="wallet-currency">Kč</span></div></div><div class="wallet-icon">💰</div></div>
+        <div class="stats-row"><div class="stat-card"><div class="stat-value green" id="statDone">0</div><div class="stat-label">Splněno</div></div><div class="stat-card"><div class="stat-value gold" id="statPending">0</div><div class="stat-label">Čeká</div></div></div>
+        <div class="week-nav"><button class="week-nav-btn" onclick="changeWeek(-1)">◀</button><span class="week-label" id="weekLabel">Tento týden</span><button class="week-nav-btn" onclick="changeWeek(1)">▶</button></div>
+        <div class="day-tabs" id="dayTabs"></div>
+        <div class="tasks-header"><div class="tasks-title" id="tasksTitle">Úkoly</div><button class="add-task-btn" id="addTaskBtn" onclick="openAddTask()" style="display:none;">+ Přidat</button></div>
+        <div id="taskList" class="task-list"></div>
+    </div>
+</div>
+<div class="modal-overlay" id="addTaskModal"><div class="modal"><div class="modal-title">Nový úkol</div><input class="modal-input" id="taskInput" type="text" placeholder="Název úkolu..." maxlength="100"><div class="modal-buttons"><button class="modal-btn cancel" onclick="closeModal()">Zrušit</button><button class="modal-btn confirm" onclick="addTask()">Přidat</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyDftie6EG5OvlpgGxJfWlAAUeszYahMvlQ",authDomain:"ukolnicek-domca.firebaseapp.com",projectId:"ukolnicek-domca",storageBucket:"ukolnicek-domca.firebasestorage.app",messagingSenderId:"959237647252",appId:"1:959237647252:web:8163cdec533e539805bd81"});
+var db=firebase.firestore(),currentRole=null,pinCode='',selectedDay=0,currentWeekOffset=0,unsubscribeTasks=null,unsubscribeWallet=null;
+var PINS={child:'1234',parent:'3385'},DAYS=['Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota'],DAYS_SHORT=['Po','Út','St','Čt','Pá','So'];
+function getWeekId(o){var n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1)+(o*7));return m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0');}
+function getWeekDates(o){var n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1)+(o*7));var r=[];for(var i=0;i<6;i++){var x=new Date(m);x.setDate(m.getDate()+i);r.push(x);}return r;}
+function getTodayIndex(){var d=new Date().getDay();return d===0?-1:d-1;}
+function formatWeekLabel(o){if(o===0)return'Tento týden';if(o===-1)return'Minulý týden';if(o===1)return'Příští týden';var d=getWeekDates(o);return d[0].getDate()+'.'+(d[0].getMonth()+1)+'. – '+d[5].getDate()+'.'+(d[5].getMonth()+1)+'.';}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function showLogin(){if(unsubscribeTasks)unsubscribeTasks();if(unsubscribeWallet)unsubscribeWallet();currentRole=null;pinCode='';document.getElementById('loginScreen').style.display='';document.getElementById('pinScreen').style.display='none';document.getElementById('appScreen').style.display='none';}
+function showPin(r){currentRole=r;pinCode='';updateDots();document.getElementById('loginScreen').style.display='none';document.getElementById('pinScreen').style.display='';document.getElementById('pinAvatar').textContent=r==='child'?'👦':'🔐';document.getElementById('pinLabel').textContent=r==='child'?'Dominiček':'Rodiče';}
+function pressKey(n){if(pinCode.length>=4)return;pinCode+=n;updateDots();if(pinCode.length===4)setTimeout(checkPin,200);}
+function pressBackspace(){pinCode=pinCode.slice(0,-1);updateDots();}
+function updateDots(){for(var i=0;i<4;i++){document.getElementById('dot'+i).className='pin-dot'+(i<pinCode.length?' filled':'');}}
+function checkPin(){if(pinCode===PINS[currentRole]){enterApp();}else{for(var i=0;i<4;i++)document.getElementById('dot'+i).className='pin-dot filled error';showToast('❌ Špatný PIN!');setTimeout(function(){pinCode='';updateDots();},600);}}
+function enterApp(){document.getElementById('pinScreen').style.display='none';document.getElementById('appScreen').style.display='';var p=currentRole==='parent';document.getElementById('appAvatar').textContent=p?'🔐':'👦';document.getElementById('appName').textContent=p?'Rodiče':'Dominiček';document.getElementById('appRole').textContent=p?'Správce úkolů':'Plnitel úkolů';document.getElementById('addTaskBtn').style.display=p?'':'none';currentWeekOffset=0;var t=getTodayIndex();selectedDay=t>=0&&t<=5?t:0;renderDayTabs();loadData();}
+function changeWeek(d){currentWeekOffset+=d;selectedDay=0;renderDayTabs();loadData();}
+function renderDayTabs(){var c=document.getElementById('dayTabs'),dates=getWeekDates(currentWeekOffset),ti=currentWeekOffset===0?getTodayIndex():-1;c.innerHTML='';for(var i=0;i<6;i++){var b=document.createElement('button');b.className='day-tab'+(i===selectedDay?' active':'')+(i===ti?' today':'');b.textContent=DAYS_SHORT[i]+' '+dates[i].getDate()+'.'+(dates[i].getMonth()+1)+'.';b.setAttribute('data-day',i);b.onclick=function(){selectedDay=parseInt(this.getAttribute('data-day'));renderDayTabs();loadData();};c.appendChild(b);}document.getElementById('weekLabel').textContent=formatWeekLabel(currentWeekOffset);document.getElementById('tasksTitle').textContent=DAYS[selectedDay];}
+function loadData(){var w=getWeekId(currentWeekOffset);if(unsubscribeTasks)unsubscribeTasks();unsubscribeTasks=db.collection('weeks').doc(w).collection('tasks').where('day','==',selectedDay).onSnapshot(function(s){var t=s.docs.map(function(d){var x=d.data();x.id=d.id;return x;});t.sort(function(a,b){return(a.createdAt?a.createdAt.seconds:0)-(b.createdAt?b.createdAt.seconds:0);});renderTasks(t);updateStats(t);},function(e){console.error(e);document.getElementById('taskList').innerHTML='<div class="empty-state"><div class="emoji">⚠️</div><p>Chyba načítání</p></div>';});if(unsubscribeWallet)unsubscribeWallet();unsubscribeWallet=db.collection('settings').doc('wallet').onSnapshot(function(d){var x=d.data();var a=x?(x.balance||0):0;document.getElementById('walletAmount').innerHTML=a+' <span class="wallet-currency">Kč</span>';});}
+function updateStats(t){var d=0,p=0;for(var i=0;i<t.length;i++){if(t[i].approvedByParent===true)d++;else if(t[i].approvedByParent!==false)p++;}document.getElementById('statDone').textContent=d;document.getElementById('statPending').textContent=p;}
+function renderTasks(tasks){var c=document.getElementById('taskList'),ip=currentRole==='parent';if(!tasks.length){c.innerHTML='<div class="empty-state"><div class="emoji">'+(ip?'📝':'⚡')+'</div><p>'+(ip?'Zatím žádné úkoly. Přidej nějaký!':'Žádné úkoly na tento den!')+'</p></div>';return;}var h='';for(var i=0;i<tasks.length;i++){var t=tasks[i],cc='',ci='',st='',sc='',ca='';if(t.approvedByParent===true){cc='approved';ci='✓';st='✅ Schváleno · +5 Kč';sc='approved';ca='completed';}else if(t.approvedByParent===false){cc='rejected';ci='✗';st='❌ Nesplněno · −5 Kč';sc='rejected';ca='rejected';}else if(t.completedByChild){cc='checked';ci='✓';st='⏳ Čeká na schválení';sc='pending';}else{st='○ Nesplněno';sc='pending';}var ac='';if(ip&&t.completedByChild&&t.approvedByParent===null)ac='<div class="task-actions"><button class="task-action-btn approve" onclick="approveTask(\''+t.id+'\',true)">✓</button><button class="task-action-btn reject" onclick="approveTask(\''+t.id+'\',false)">✗</button></div>';if(ip&&t.approvedByParent===null&&!t.completedByChild)ac+='<button class="task-action-btn delete" onclick="deleteTask(\''+t.id+'\')">🗑</button>';var ck='';if(!ip&&t.approvedByParent===null)ck='onclick="toggleComplete(\''+t.id+'\','+(!t.completedByChild)+')"';h+='<div class="task-card '+ca+'"><div class="task-checkbox '+cc+'" '+ck+'>'+ci+'</div><div class="task-info"><div class="task-name">'+escapeHtml(t.name)+'</div><div class="task-status '+sc+'">'+st+'</div></div>'+ac+'</div>';}c.innerHTML=h;}
+function escapeHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function openAddTask(){document.getElementById('addTaskModal').classList.add('active');document.getElementById('taskInput').value='';setTimeout(function(){document.getElementById('taskInput').focus();},200);}
+function closeModal(){document.getElementById('addTaskModal').classList.remove('active');}
+function addTask(){var n=document.getElementById('taskInput').value.trim();if(!n)return;db.collection('weeks').doc(getWeekId(currentWeekOffset)).collection('tasks').add({name:n,day:selectedDay,completedByChild:false,approvedByParent:null,createdAt:firebase.firestore.FieldValue.serverTimestamp()});closeModal();showToast('✅ Úkol přidán!');}
+function toggleComplete(id,v){db.collection('weeks').doc(getWeekId(currentWeekOffset)).collection('tasks').doc(id).update({completedByChild:v});showToast(v?'💪 Super, řekni rodičům!':'↩️ Zrušeno');}
+function approveTask(id,a){db.collection('weeks').doc(getWeekId(currentWeekOffset)).collection('tasks').doc(id).update({approvedByParent:a});db.collection('settings').doc('wallet').get().then(function(d){var b=d.exists?(d.data().balance||0):0;db.collection('settings').doc('wallet').set({balance:a?b+5:b-5});});showToast(a?'✅ +5 Kč pro Domču!':'❌ −5 Kč');}
+function deleteTask(id){if(!confirm('Smazat úkol?'))return;db.collection('weeks').doc(getWeekId(currentWeekOffset)).collection('tasks').doc(id).delete();showToast('🗑 Smazáno');}
+db.collection('settings').doc('wallet').get().then(function(d){if(!d.exists)db.collection('settings').doc('wallet').set({balance:0});});
+</script>
+</body>
+</html>
