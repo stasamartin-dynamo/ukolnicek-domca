@@ -396,11 +396,12 @@ db.collection('settings').doc('wallet').get().then(function(d){var b=d.exists?(d
 toast('Smazáno');loadHist()}
 
 // GOALS (dynamic from Firestore)
+var goalsSeeded=false;
 function loadGoals(){
 if(us.gl)us.gl();
 us.gl=db.collection('goals_list').orderBy('order','asc').onSnapshot(function(s){
 goalsArr=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});
-if(!goalsArr.length)seedGoals();else renderG()
+if(!goalsArr.length&&!goalsSeeded){goalsSeeded=true;seedGoals()}else renderG()
 })}
 function seedGoals(){
 var batch=db.batch();
