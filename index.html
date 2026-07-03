@@ -401,7 +401,17 @@ function loadGoals(){
 if(us.gl)us.gl();
 us.gl=db.collection('goals_list').orderBy('order','asc').onSnapshot(function(s){
 goalsArr=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});
-if(!goalsArr.length&&!goalsSeeded){goalsSeeded=true;seedGoals()}else renderG()
+renderG();
+if(goalsArr.length){
+if(!goalsSeeded){goalsSeeded=true;db.collection('settings').doc('meta').set({goalsSeeded:true},{merge:true})}
+}else if(!goalsSeeded)maybeSeedGoals()
+})}
+function maybeSeedGoals(){
+goalsSeeded=true;
+db.collection('settings').doc('meta').get().then(function(d){
+if(d.exists&&d.data().goalsSeeded)return; // výchozí cíle už jednou byly vytvořeny (a případně smazány) - nikdy je nedoplňovat znovu automaticky
+seedGoals();
+db.collection('settings').doc('meta').set({goalsSeeded:true},{merge:true})
 })}
 function seedGoals(){
 var batch=db.batch();
