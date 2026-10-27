@@ -131,6 +131,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 .ph-full-dl{position:absolute;bottom:30px;left:20px;background:var(--ac);border:none;border-radius:12px;padding:10px 20px;color:#0F0F1A;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--gb);color:var(--tx);padding:12px 22px;border-radius:14px;font-weight:700;font-size:14px;z-index:200;transition:transform .3s;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.ex-card{background:var(--card);border:1px solid var(--gb);border-radius:14px;padding:14px;margin-bottom:8px}
+.ex-top{display:flex;align-items:center;gap:10px}
+.ex-ico{font-size:24px;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg3);flex-shrink:0}
+.ex-nm{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700}
+.ex-det{font-size:11px;color:var(--t2);margin-top:2px}
+.ex-cat{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--a2g);color:var(--a2);text-transform:uppercase;display:inline-block}
+.ex-freq{display:flex;gap:3px;margin-top:6px}
+.ex-fd{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;background:var(--bg3);color:var(--t3)}
+.ex-fd.on{background:var(--ag);color:var(--ac)}
+.ex-days{display:flex;gap:4px}
+.ex-day{width:32px;height:32px;border-radius:8px;border:1px solid var(--gb);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg3);color:var(--t3)}
+.ex-day.sel{background:var(--ag);color:var(--ac);border-color:var(--ac)}
+.wk-log{background:var(--card);border:1px solid var(--gb);border-radius:14px;padding:14px;margin-bottom:8px}
+.wk-log.done{border-color:rgba(0,212,170,.3);background:rgba(0,212,170,.05)}
+.ex-sets{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.ex-set{display:flex;align-items:center;gap:6px}
+.ex-set input{width:56px;padding:6px;border:1px solid var(--bg3);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--tx);background:var(--bg);text-align:center}
+.ex-set input:focus{border-color:var(--ac);outline:none}
+.ex-set label{font-size:11px;color:var(--t2)}
 </style>
 </head>
 <body>
@@ -166,6 +185,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
     <div class="sl">🎯 Cíle</div>
     <button class="ab" id="addGoalB" onclick="openGM()" style="display:none;margin-bottom:10px">+ Přidat cíl</button>
     <div id="goalsA"></div>
+    <div class="dv"></div>
+    <div class="sl">💪 Cvičení</div>
+    <div class="ti" onclick="nav('exercises')"><div class="ti-l"><div class="ti-i">🏋️</div><div><div class="ti-n">Denní cvičení</div><div class="ti-s">Cviky, výsledky & statistiky</div></div></div><div class="ti-r"><span id="exBg" class="bg gr">0</span><span class="ar">›</span></div></div>
 </div>
 
 <div id="V_day" class="vw"><button class="bk" onclick="nav('main')">← Zpět</button><div class="dv"></div><div class="vt" id="dT"></div><div class="vs" id="dD"></div><div class="dv"></div><div class="th"><div class="ttl">Úkoly dne</div><button class="ab" id="addB" onclick="openTM()" style="display:none">+ Přidat</button></div><div class="tls" id="tL"></div></div>
@@ -174,12 +196,41 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-hei
 
 <div id="V_hist" class="vw"><button class="bk" onclick="nav('main')">← Zpět</button><div class="dv"></div><div class="vt">📜 Historie pokladny</div><div class="dv"></div><div id="hL"></div></div>
 
+<div id="V_exercises" class="vw"><button class="bk" onclick="nav('main')">← Zpět</button><div class="dv"></div>
+<div class="vt">💪 Denní cvičení</div><div class="vs" id="exDate"></div><div class="dv"></div>
+<div id="exStats"></div><div class="dv"></div>
+<div class="th"><div class="ttl">Dnešní trénink</div><button class="ab" onclick="saveWorkout()">💾 Uložit</button></div>
+<div id="exToday"></div><div class="dv"></div>
+<div class="ti" onclick="nav('exercise_defs')"><div class="ti-l"><div class="ti-i">⚙️</div><div><div class="ti-n">Správa cviků</div><div class="ti-s">Přidej, uprav, smaž cviky</div></div></div><div class="ti-r"><span class="ar">›</span></div></div>
+<div class="ti" style="margin-top:8px" onclick="nav('exercise_hist')"><div class="ti-l"><div class="ti-i">📊</div><div><div class="ti-n">Historie tréninků</div><div class="ti-s">Přehled výsledků</div></div></div><div class="ti-r"><span class="ar">›</span></div></div>
+</div>
+
+<div id="V_exercise_defs" class="vw"><button class="bk" onclick="nav('exercises')">← Zpět</button><div class="dv"></div>
+<div class="vt">⚙️ Správa cviků</div><div class="vs">Definuj cviky a rutinu</div><div class="dv"></div>
+<div class="th"><div class="ttl">Cviky</div><button class="ab" onclick="openExM()">+ Přidat</button></div>
+<div id="exDefList"></div></div>
+
+<div id="V_exercise_hist" class="vw"><button class="bk" onclick="nav('exercises')">← Zpět</button><div class="dv"></div>
+<div class="vt">📊 Historie tréninků</div><div class="dv"></div>
+<div id="exHistList"></div></div>
+
 </div></div>
 
 <div class="mo" id="mT"><div class="mc"><h3 id="mTt">Nový úkol</h3><input class="mi" id="mTn" placeholder="Název úkolu..."><textarea class="mt" id="mTd" placeholder="Poznámka..."></textarea><div class="mbs"><button class="mb cn" onclick="clM('mT')">Zrušit</button><button class="mb ok" id="mTo" onclick="savT()">Přidat</button></div></div></div>
 <div class="mo" id="mB"><div class="mc"><h3 id="mBt">Nový bonusový úkol</h3><input class="mi" id="mBn" placeholder="Název (např. Vysátí auta)..."><input class="mi" id="mBp" type="number" placeholder="Odměna v Kč..." min="1"><textarea class="mt" id="mBd" placeholder="Popis co jsem udělal..."></textarea><div class="mbs"><button class="mb cn" onclick="clM('mB')">Zrušit</button><button class="mb ok" id="mBo" onclick="savB()">Přidat</button></div></div></div>
 <div class="mo" id="mF"><div class="mc"><h3 id="mFt">Vklad</h3><input class="mi" id="mFa" type="number" placeholder="Částka v Kč..." min="1"><input class="mi" id="mFd" type="date"><textarea class="mt" id="mFn" placeholder="Poznámka (důvod, kam, proč)..."></textarea><div class="mbs"><button class="mb cn" onclick="clM('mF')">Zrušit</button><button class="mb ok" onclick="savF()">Potvrdit</button></div></div></div>
 <div class="mo" id="mG"><div class="mc"><h3 id="mGt">Nový cíl</h3><input class="mi" id="mGn" placeholder="Název cíle (např. Motorka)..."><input class="mi" id="mGe" placeholder="Emoji ikona (např. 🏍️)..." maxlength="4"><input class="mi" id="mGp" type="number" placeholder="Celková cena v Kč..." min="1"><input class="mi" id="mGc" type="number" placeholder="Domča platí (Kč)..." min="0"><input class="mi" id="mGr" type="number" placeholder="Rodiče platí (Kč)..." min="0"><div class="mbs"><button class="mb cn" onclick="clM('mG')">Zrušit</button><button class="mb ok" id="mGo" onclick="savG()">Přidat</button></div></div></div>
+<div class="mo" id="mE"><div class="mc"><h3 id="mEt">Nový cvik</h3>
+<input class="mi" id="mEn" placeholder="Název cviku (např. Kliky)...">
+<input class="mi" id="mEe" placeholder="Emoji (např. 💪)..." maxlength="4">
+<select class="mi" id="mEc" style="appearance:auto"><option value="Síla">💪 Síla</option><option value="Kardio">🏃 Kardio</option><option value="Core">🧘 Core</option><option value="Flexibilita">🤸 Flexibilita</option><option value="Jiné">⭐ Jiné</option></select>
+<input class="mi" id="mEs" type="number" placeholder="Počet sérií..." min="1" value="3">
+<input class="mi" id="mEr" type="number" placeholder="Počet opakování..." min="1" value="10">
+<input class="mi" id="mEw" type="number" placeholder="Váha (kg, 0 = vlastní tělo)..." min="0" step="0.5" value="0">
+<textarea class="mt" id="mEnd" placeholder="Poznámky..."></textarea>
+<div style="margin-bottom:12px"><div class="ttl" style="margin-bottom:6px;font-size:12px">Dny cvičení:</div>
+<div class="ex-days" id="mEdays"></div></div>
+<div class="mbs"><button class="mb cn" onclick="clM('mE')">Zrušit</button><button class="mb ok" id="mEo" onclick="saveExDef()">Přidat</button></div></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="fileIn" accept="image/*" style="display:none" onchange="onFileSelected(event)">
 <div id="phView" class="ph-full" style="display:none" onclick="closePhView()"></div>
@@ -208,8 +259,8 @@ function esc(s){var d=document.createElement('div');d.textContent=s;return d.inn
 function fD(d){if(!d)return'';if(d.toDate)d=d.toDate();return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear()}
 
 // NAV
-function nav(v){var vs=['main','day','bonus','hist'];vs.forEach(function(x){document.getElementById('V_'+x).className=x===v?'vw on':'vw'});
-if(v==='bonus')renderBL();if(v==='hist')loadHist()}
+function nav(v){var vs=['main','day','bonus','hist','exercises','exercise_defs','exercise_hist'];vs.forEach(function(x){document.getElementById('V_'+x).className=x===v?'vw on':'vw'});
+if(v==='bonus')renderBL();if(v==='hist')loadHist();if(v==='exercises')renderExToday();if(v==='exercise_defs')renderExDefs();if(v==='exercise_hist')loadExHist()}
 
 function showLogin(){Object.values(us).forEach(function(u){if(u)u()});us={};R=null;pin='';
 document.getElementById('sL').classList.remove('hide');document.getElementById('sP').classList.add('hide');document.getElementById('sA').classList.add('hide')}
@@ -224,7 +275,7 @@ function enterApp(){
 document.getElementById('sP').classList.add('hide');document.getElementById('sA').classList.remove('hide');
 var p=R==='parent';document.getElementById('aA').innerHTML=p?'🔐':'<img src="data:image/jpeg;base64,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" style="width:28px;height:28px;border-radius:50%;object-fit:cover">';document.getElementById('aN').textContent=p?'Rodiče':'Domča';
 document.getElementById('aR').textContent=p?'Správce úkolů':'Plnitel úkolů';document.getElementById('wBs').style.display=p?'flex':'none';
-wO=0;sD=-1;nav('main');loadW();loadWk();loadBn();loadGoals();loadSI();cleanOldPhotos();
+wO=0;sD=-1;nav('main');loadW();loadWk();loadBn();loadGoals();loadSI();loadExDefs();cleanOldPhotos();
 document.getElementById('addGoalB').style.display=p?'':'none'}
 
 // CLEANUP old week photos
@@ -493,7 +544,141 @@ var ref=db.collection('bonus_tasks').doc(id);
 ref.get().then(function(d){var ph=d.data().photos||[];ph.splice(pi,1);ref.update({photos:ph});toast('Smazáno')})}
 else if(type==='goal'){db.collection('goals_list').doc(id).update({img:''});toast('Fotka smazána')}}
 
-function clM(id){document.getElementById(id).classList.remove('on');eId=null;eBnId=null;eGId=null}
+// EXERCISES
+var exDefs=[],exEditId=null,exSelectedDays=[0,1,2,3,4];
+var DNAMES=['Po','Út','St','Čt','Pá','So','Ne'];
+
+function loadExDefs(){
+if(us.ex)us.ex();
+us.ex=db.collection('exercise_defs').orderBy('order','asc').onSnapshot(function(s){
+exDefs=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});
+var today=new Date().getDay();var dayIdx=today===0?6:today-1;
+var cnt=0;for(var i=0;i<exDefs.length;i++){if(exDefs[i].active!==false&&exDefs[i].frequency&&exDefs[i].frequency.indexOf(dayIdx)>=0)cnt++}
+var el=document.getElementById('exBg');if(el)el.textContent=cnt;
+if(document.getElementById('V_exercises').classList.contains('on'))renderExToday();
+if(document.getElementById('V_exercise_defs').classList.contains('on'))renderExDefs()
+})}
+
+function renderExDefs(){
+var c=document.getElementById('exDefList');
+if(!exDefs.length){c.innerHTML='<div class="ey"><em>🏋️</em><p>Žádné cviky. Přidej!</p></div>';return}
+var h='';
+for(var i=0;i<exDefs.length;i++){var e=exDefs[i];
+var freqH='<div class="ex-freq">';for(var d=0;d<7;d++){var on=e.frequency&&e.frequency.indexOf(d)>=0;freqH+='<span class="ex-fd'+(on?' on':'')+'">'+DNAMES[d]+'</span>'}freqH+='</div>';
+var det=e.targetSets+'×'+e.targetReps+(e.targetWeight?' @ '+e.targetWeight+'kg':' (vlastní)');
+h+='<div class="ex-card"><div class="ex-top"><div class="ex-ico">'+(e.emoji||'🏋️')+'</div><div style="flex:1"><div class="ex-nm">'+esc(e.name)+'</div><div class="ex-det">'+det+' · <span class="ex-cat">'+esc(e.category||'Jiné')+'</span></div>'+freqH+'</div><div class="ta"><button class="tb ge" data-id="'+e.id+'" onclick="editExDef(this.dataset.id)">✎</button><button class="tb gd" data-id="'+e.id+'" onclick="delExDef(this.dataset.id)">🗑</button></div></div></div>'}
+c.innerHTML=h}
+
+function openExM(id){
+exEditId=id||null;var e=null;
+if(id){for(var i=0;i<exDefs.length;i++)if(exDefs[i].id===id){e=exDefs[i];break}}
+document.getElementById('mEt').textContent=e?'Upravit cvik':'Nový cvik';
+document.getElementById('mEo').textContent=e?'Uložit':'Přidat';
+document.getElementById('mEn').value=e?e.name:'';document.getElementById('mEe').value=e?(e.emoji||''):'';
+document.getElementById('mEc').value=e?(e.category||'Síla'):'Síla';
+document.getElementById('mEs').value=e?e.targetSets:'3';document.getElementById('mEr').value=e?e.targetReps:'10';
+document.getElementById('mEw').value=e?(e.targetWeight||0):'0';document.getElementById('mEnd').value=e?(e.notes||''):'';
+exSelectedDays=e&&e.frequency?e.frequency.slice():[0,1,2,3,4];renderExDayPicker();
+document.getElementById('mE').classList.add('on');setTimeout(function(){document.getElementById('mEn').focus()},200)}
+function editExDef(id){openExM(id)}
+
+function renderExDayPicker(){
+var c=document.getElementById('mEdays'),h='';
+for(var d=0;d<7;d++){var sel=exSelectedDays.indexOf(d)>=0;h+='<div class="ex-day'+(sel?' sel':'')+'" data-d="'+d+'" onclick="toggleExDay('+d+')">'+DNAMES[d]+'</div>'}
+c.innerHTML=h}
+function toggleExDay(d){var idx=exSelectedDays.indexOf(d);if(idx>=0)exSelectedDays.splice(idx,1);else exSelectedDays.push(d);exSelectedDays.sort();renderExDayPicker()}
+
+function saveExDef(){
+var nm=document.getElementById('mEn').value.trim(),em=document.getElementById('mEe').value.trim(),cat=document.getElementById('mEc').value;
+var sets=parseInt(document.getElementById('mEs').value)||3,reps=parseInt(document.getElementById('mEr').value)||10;
+var wt=parseFloat(document.getElementById('mEw').value)||0,notes=document.getElementById('mEnd').value.trim();
+if(!nm){toast('Vyplň název!');return}
+var data={name:nm,emoji:em,category:cat,targetSets:sets,targetReps:reps,targetWeight:wt,frequency:exSelectedDays,notes:notes,active:true};
+if(exEditId){db.collection('exercise_defs').doc(exEditId).update(data);toast('Cvik upraven!')}
+else{data.order=exDefs.length;data.createdAt=firebase.firestore.FieldValue.serverTimestamp();db.collection('exercise_defs').add(data);toast('Cvik přidán!')}
+clM('mE')}
+function delExDef(id){if(!confirm('Smazat cvik?'))return;db.collection('exercise_defs').doc(id).delete();toast('Cvik smazán')}
+
+function getTodayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+function renderExToday(){
+var c=document.getElementById('exToday'),d=new Date();
+var dayNames=['Neděle','Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota'];
+document.getElementById('exDate').textContent=dayNames[d.getDay()]+' '+d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear();
+var dayIdx=d.getDay()===0?6:d.getDay()-1;
+var todayExs=[];for(var i=0;i<exDefs.length;i++){if(exDefs[i].active!==false&&exDefs[i].frequency&&exDefs[i].frequency.indexOf(dayIdx)>=0)todayExs.push(exDefs[i])}
+if(!todayExs.length){c.innerHTML='<div class="ey"><em>🧘</em><p>Dnes žádné cviky v plánu</p></div>';loadExStats();return}
+var todayKey=getTodayStr();
+db.collection('exercise_logs').doc(todayKey).get().then(function(doc){
+var log=doc.exists?doc.data():{},logExs=log.exercises||{},h='';
+for(var i=0;i<todayExs.length;i++){var ex=todayExs[i],logEx=logExs[ex.id]||{},done=logEx.completed||false,sets=logEx.sets||[];
+h+='<div class="wk-log'+(done?' done':'')+'">';
+h+='<div class="ex-top"><div class="ex-ico">'+(ex.emoji||'🏋️')+'</div><div style="flex:1"><div class="ex-nm">'+esc(ex.name)+'</div>';
+h+='<div class="ex-det">Cíl: '+ex.targetSets+'×'+ex.targetReps+(ex.targetWeight?' @ '+ex.targetWeight+'kg':' (vlastní)')+'</div></div>';
+h+='<div class="ck'+(done?' ch':'')+'" data-id="'+ex.id+'" onclick="toggleExDone(this.dataset.id)">'+(done?'✓':'')+'</div></div>';
+h+='<div class="ex-sets">';
+for(var s=0;s<ex.targetSets;s++){var sd=sets[s]||{};
+h+='<div class="ex-set"><label>Set '+(s+1)+':</label>';
+h+='<input type="number" data-eid="'+ex.id+'" data-si="'+s+'" data-f="reps" placeholder="'+ex.targetReps+'" value="'+(sd.reps||'')+'" onchange="updateExSet(this)">';
+h+='<label>opak.</label>';
+if(ex.targetWeight>0){h+='<input type="number" step="0.5" data-eid="'+ex.id+'" data-si="'+s+'" data-f="weight" placeholder="'+ex.targetWeight+'" value="'+(sd.weight||'')+'" onchange="updateExSet(this)"><label>kg</label>'}}
+h+='</div>';
+if(ex.notes)h+='<div class="tno" style="margin-top:6px">'+esc(ex.notes)+'</div>';
+h+='</div>'}
+c.innerHTML=h;loadExStats()})}
+
+function toggleExDone(eid){
+var todayKey=getTodayStr();
+db.collection('exercise_logs').doc(todayKey).get().then(function(doc){
+var log=doc.exists?doc.data():{},logExs=log.exercises||{};
+if(!logExs[eid])logExs[eid]={sets:[],completed:false};
+logExs[eid].completed=!logExs[eid].completed;
+db.collection('exercise_logs').doc(todayKey).set({exercises:logExs,date:todayKey,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+toast(logExs[eid].completed?'Hotovo! 💪':'Vráceno');
+setTimeout(renderExToday,300)})}
+
+function updateExSet(el){
+var eid=el.dataset.eid,si=parseInt(el.dataset.si),f=el.dataset.f,val=parseFloat(el.value)||0;
+var todayKey=getTodayStr();
+db.collection('exercise_logs').doc(todayKey).get().then(function(doc){
+var log=doc.exists?doc.data():{},logExs=log.exercises||{};
+if(!logExs[eid])logExs[eid]={sets:[],completed:false};
+while(logExs[eid].sets.length<=si)logExs[eid].sets.push({reps:0,weight:0});
+logExs[eid].sets[si][f]=val;
+db.collection('exercise_logs').doc(todayKey).set({exercises:logExs,date:todayKey,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})})}
+
+function saveWorkout(){toast('Trénink uložen! 🎉')}
+
+function loadExStats(){
+var now=new Date(),ws=new Date(now),wd=ws.getDay();ws.setDate(ws.getDate()-(wd===0?6:wd-1));ws.setHours(0,0,0,0);
+var wss=ws.getFullYear()+'-'+String(ws.getMonth()+1).padStart(2,'0')+'-'+String(ws.getDate()).padStart(2,'0');
+db.collection('exercise_logs').orderBy('date','desc').limit(30).get().then(function(s){
+var thisWeek=0,total=0,streak=0,logs=[];
+s.docs.forEach(function(d){var x=d.data(),exs=x.exercises||{},anyDone=false;
+Object.keys(exs).forEach(function(k){if(exs[k].completed)anyDone=true});
+if(anyDone){logs.push(x.date);total++;if(x.date>=wss)thisWeek++}});
+var today=getTodayStr(),cd=new Date(now);
+for(var i=0;i<30;i++){var ds=cd.getFullYear()+'-'+String(cd.getMonth()+1).padStart(2,'0')+'-'+String(cd.getDate()).padStart(2,'0');
+if(logs.indexOf(ds)>=0){streak++;cd.setDate(cd.getDate()-1)}else if(ds===today){cd.setDate(cd.getDate()-1)}else break}
+document.getElementById('exStats').innerHTML='<div class="sr"><div class="sc"><div class="sv g">'+thisWeek+'</div><div class="sll">Tento týden</div></div><div class="sc"><div class="sv y">'+streak+'</div><div class="sll">Série 🔥</div></div><div class="sc"><div class="sv" style="color:var(--a2)">'+total+'</div><div class="sll">Celkem</div></div></div>'})}
+
+function loadExHist(){
+var c=document.getElementById('exHistList');c.innerHTML='<div class="ey"><em>⏳</em><p>Načítám...</p></div>';
+db.collection('exercise_logs').orderBy('date','desc').limit(14).get().then(function(s){
+if(!s.docs.length){c.innerHTML='<div class="ey"><em>📭</em><p>Žádná historie</p></div>';return}
+var dn=['Ne','Po','Út','St','Čt','Pá','So'],h='';
+s.docs.forEach(function(doc){var x=doc.data(),exs=x.exercises||{},pts=x.date.split('-');
+var dt=new Date(parseInt(pts[0]),parseInt(pts[1])-1,parseInt(pts[2])),doneL=[];
+Object.keys(exs).forEach(function(k){if(exs[k].completed){
+var def=null;for(var i=0;i<exDefs.length;i++)if(exDefs[i].id===k){def=exDefs[i];break}
+var nm=def?def.name:k,emoji=def?(def.emoji||'🏋️'):'🏋️',si=[];
+var st=exs[k].sets||[];for(var j=0;j<st.length;j++){if(st[j].reps)si.push(st[j].reps+(st[j].weight?'×'+st[j].weight+'kg':''))}
+doneL.push(emoji+' '+nm+(si.length?' ('+si.join(', ')+')':''))}});
+if(doneL.length){h+='<div class="hi" style="flex-direction:column;align-items:flex-start;gap:4px"><div class="hi-d">'+dn[dt.getDay()]+' '+dt.getDate()+'.'+(dt.getMonth()+1)+'.'+dt.getFullYear()+'</div>';
+for(var i=0;i<doneL.length;i++)h+='<div class="hi-t" style="font-size:12px">'+esc(doneL[i])+'</div>';h+='</div>'}});
+if(!h)h='<div class="ey"><em>📭</em><p>Žádné záznamy</p></div>';c.innerHTML=h})}
+
+function clM(id){document.getElementById(id).classList.remove('on');eId=null;eBnId=null;eGId=null;exEditId=null}
 db.collection('settings').doc('wallet').get().then(function(d){if(!d.exists)db.collection('settings').doc('wallet').set({balance:0})});
 
 </script>
