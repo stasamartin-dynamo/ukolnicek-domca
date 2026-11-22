@@ -451,7 +451,7 @@ var us={};
 var PINS={child:'1234',parent:'3385'};
 var DS=['Pondělí','Úterý','Středa','Čtvrtek','Pátek'];
 var DIC=['🚀','⚡','🔥','💎','🏆'];
-var DTS=['Myčka','Koše','Pračka/Sušička','Úkoly','Aktovka nachystaná v obýváku'];
+var DTS=['Myčka','Kuchyň','Nádobí','Suška','Koše','Vysávat'];
 var DEFAULT_SUBJECTS=[
 {name:'Matika',emoji:'🔢',duration:20,category:'math'},
 {name:'Angličtina',emoji:'🇬🇧',duration:20,category:'eng'},
@@ -502,7 +502,7 @@ function cP(){return R==='parent'}
 function enterApp(){document.getElementById('sL').style.display='none';document.getElementById('sP').style.display='none';document.getElementById('sA').style.display='block';
 document.getElementById('aA').src=childAvatarSrc;document.getElementById('aN').textContent=R==='child'?'Domča':'Rodiče';
 document.getElementById('addB').style.display=cP()?'inline-block':'none';
-document.getElementById('addGoalB').style.display=cP()?'inline-block':'none';
+document.getElementById('addGoalB').style.display='inline-block';
 document.getElementById('addBB').style.display=cP()?'inline-block':'none';
 document.getElementById('addSubjB').style.display=cP()?'block':'none';
 loadW();loadWk();loadBn();loadGoals();loadSI();loadPhoneTime();cleanOldPhotos();renderHomeGrid();bnav('home')}
@@ -634,7 +634,7 @@ if(!cP()){toast('Pouze rodiče!');return}
 var id=wkId(wO),batch=db.batch();
 for(var d=0;d<5;d++){for(var t=0;t<DTS.length;t++){
 var ref=db.collection('weeks').doc(id).collection('tasks').doc();
-batch.set(ref,{name:DTS[t],note:'',price:0,day:d,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}}
+batch.set(ref,{name:DTS[t],note:'',price:5,day:d,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}}
 db.collection('weeks').doc(id).set({created:firebase.firestore.FieldValue.serverTimestamp()});
 batch.commit().then(function(){toast('Úkoly vyplněny! 📋')})}
 
@@ -727,7 +727,7 @@ else h+='<div class="gi" style="background:var(--ag);display:flex;align-items:ce
 h+='<div class="gc-body"><div class="gn">'+esc(g.name)+'</div><div class="gp">'+g.price+' Kč · '+pct+'%</div>';
 h+='<div class="gpb"><div class="gpf" style="width:'+pct+'%"></div></div></div>';
 if(cP()&&bal>=g.price)h+='<button class="gby" onclick="buyG(\''+g.id+'\',\''+esc(g.name)+'\','+g.price+')">Koupit</button>';
-if(cP())h+='<button class="tb" onclick="editG(\''+g.id+'\')" style="margin-left:4px">✎</button>';
+h+='<button class="tb" onclick="editG(\''+g.id+'\')" style="margin-left:4px">✎</button>';
 h+='</div>'});
 document.getElementById('goalsA').innerHTML=h}
 function openGM(id){eGId=id||null;var g=null;
