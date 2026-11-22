@@ -310,7 +310,8 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 </div></div>
 
 <div class="phone-card"><div class="wal-l">📱 Telefon zítra</div><div class="wal-a" id="phoneA">0 min</div>
-<div class="phone-min-detail" id="phoneDet">Za schválené učení</div></div>
+<div class="phone-min-detail" id="phoneDet">Za schválené učení</div>
+<button id="phoneResetBtn" onclick="resetPhone()" style="display:none;margin-top:10px;padding:6px 14px;border:1px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-family:inherit;cursor:pointer">🔄 Vynulovat minuty</button></div>
 
 <div class="sec"><span class="sec-t">📋 Denní úkoly</span></div>
 <div class="wk-nav"><button onclick="chgW(-1)">‹</button><span class="wk-lbl" id="wLb"></span><button onclick="chgW(1)">›</button></div>
@@ -910,7 +911,12 @@ db.collection('phone_time').doc(tmrStr).get().then(function(doc){
 var mins=doc.exists?(doc.data().minutes||0):0;
 document.getElementById('phoneA').textContent=mins+' min';
 document.getElementById('spPhone').textContent=mins+' min';
-document.getElementById('phoneDet').textContent=mins>0?'Zítra '+fD(tmr):'Za schválené učení'})}
+document.getElementById('phoneDet').textContent=mins>0?'Zítra '+fD(tmr):'Za schválené učení';
+document.getElementById('phoneResetBtn').style.display=(cP()&&mins>0)?'inline-block':'none'})}
+function resetPhone(){if(!confirm('Vynulovat minuty telefonu?'))return;
+var tmr=new Date();tmr.setDate(tmr.getDate()+1);var tmrStr=getDateStr(tmr);
+db.collection('phone_time').doc(tmrStr).set({minutes:0,date:tmrStr});
+toast('Minuty vynulovány');loadPhoneTime()}
 
 // ===== DASHBOARD =====
 function renderDash(){
