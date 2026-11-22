@@ -597,7 +597,8 @@ h+='<div class="ta">';
 if(cP()&&t.done&&t.approvedByParent===undefined){
 h+='<button class="tb" onclick="event.stopPropagation();appT(\''+t.id+'\',true)" title="Schválit">✅</button>';
 h+='<button class="tb" onclick="event.stopPropagation();appT(\''+t.id+'\',false)" title="Zamítnout">❌</button>'}
-if(cP()){h+='<button class="tb" onclick="event.stopPropagation();editT(\''+t.id+'\')" title="Upravit">✎</button>'}
+if(cP()){h+='<button class="tb" onclick="event.stopPropagation();editT(\''+t.id+'\')" title="Upravit">✎</button>';
+h+='<button class="tb" onclick="event.stopPropagation();delT(\''+t.id+'\')" title="Smazat">🗑</button>'}
 h+='</div></div>'});
 document.getElementById('tL').innerHTML=h}
 
@@ -681,7 +682,8 @@ h+='</div><div class="ta">';
 if(cP()&&t.done&&t.approvedByParent===undefined){
 h+='<button class="tb" onclick="appBn(\''+t.id+'\',true,'+t.price+')">✅</button>';
 h+='<button class="tb" onclick="appBn(\''+t.id+'\',false,'+t.price+')">❌</button>'}
-if(cP()){h+='<button class="tb" onclick="editBn(\''+t.id+'\')">✎</button>'}
+if(cP()){h+='<button class="tb" onclick="editBn(\''+t.id+'\')">✎</button>';
+h+='<button class="tb" onclick="delBn(\''+t.id+'\')">🗑</button>'}
 h+='</div></div>'});
 document.getElementById('bL').innerHTML=h}
 function togBn(id,v){db.collection('bonus_tasks').doc(id).update({done:v});if(!v){db.collection('bonus_tasks').doc(id).update({approvedByParent:firebase.firestore.FieldValue.delete()})}toast(v?'Hotovo!':'Vráceno')}
@@ -825,6 +827,7 @@ else{
 if(R==='child'){h+='<button class="learn-btn start" onclick="completeLearn(\''+ds+'\',\''+k+'\')">\u25B6 Splnit</button>'}
 else{h+='<span style="font-size:12px;color:var(--t2)">Nesplněno</span>'}}
 
+if(cP()){h+='<button class="tb" onclick="delSubj(\''+ds+'\',\''+k+'\')" title="Smazat" style="margin-left:4px">🗑</button>'}
 h+='</div></div></div>'});
 
 document.getElementById('learnList').innerHTML=h||'<div class="ey"><em>\uD83D\uDCDA</em><p>Žádné předměty</p></div>';
@@ -876,6 +879,10 @@ var upd={};
 upd['subjects.'+key]={name:nm,emoji:emoji,duration:dur,category:'other',completed:false,approved:null,startedAt:null,completedAt:null};
 db.collection('learning').doc(ds).set({date:ds,subjects:{}},{merge:true}).then(function(){
 db.collection('learning').doc(ds).update(upd).then(function(){toast('Předmět přidán!');clM('mS');renderLearn()})})}
+
+function delSubj(ds,key){if(!confirm('Smazat předmět?'))return;
+var upd={};upd['subjects.'+key]=firebase.firestore.FieldValue.delete();
+db.collection('learning').doc(ds).update(upd).then(function(){toast('Smazáno');renderLearn()})}
 
 // PHONE TIME
 function loadPhoneTime(){
