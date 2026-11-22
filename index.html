@@ -392,6 +392,10 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 <input class="mi" id="mTn" placeholder="Název úkolu">
 <input class="mi" id="mTno" placeholder="Poznámka (volitelné)">
 <input class="mi" id="mTp" placeholder="Odměna v Kč" type="number">
+<div id="mTscope" style="display:none;margin:8px 0;display:flex;gap:8px">
+<button class="mb" id="mTsDay" onclick="setTScope('day')" style="flex:1;font-size:13px">📅 Jen tento den</button>
+<button class="mb" id="mTsWeek" onclick="setTScope('week')" style="flex:1;font-size:13px">📋 Celý týden</button>
+</div>
 <div class="mbs">
 <button class="mb p" id="mTo" onclick="savT()">Přidat</button>
 <button class="mb d" id="mTd" onclick="delT(eId)" style="display:none">🗑</button>
@@ -603,6 +607,12 @@ h+='</div></div>'});
 document.getElementById('tL').innerHTML=h}
 
 // TASK CRUD
+var tScope='day';
+function setTScope(s){tScope=s;
+document.getElementById('mTsDay').style.background=s==='day'?'var(--ac)':'var(--bg3)';
+document.getElementById('mTsDay').style.color=s==='day'?'#fff':'var(--tx)';
+document.getElementById('mTsWeek').style.background=s==='week'?'var(--ac)':'var(--bg3)';
+document.getElementById('mTsWeek').style.color=s==='week'?'#fff':'var(--tx)'}
 function openTM(id){eId=id||null;var t=null;
 if(id){var tasks=window._wkTasks||[];for(var i=0;i<tasks.length;i++)if(tasks[i].id===id){t=tasks[i];break}}
 document.getElementById('mTt').textContent=t?'Upravit úkol':'Nový úkol';
@@ -610,12 +620,18 @@ document.getElementById('mTo').textContent=t?'Uložit':'Přidat';
 document.getElementById('mTn').value=t?t.name:'';document.getElementById('mTno').value=t?(t.note||''):'';
 document.getElementById('mTp').value=t?(t.price||''):'';
 document.getElementById('mTd').style.display=t?'block':'none';
+document.getElementById('mTscope').style.display=t?'none':'flex';
+tScope='day';setTScope('day');
 document.getElementById('mT').classList.add('on');setTimeout(function(){document.getElementById('mTn').focus()},200)}
 function editT(id){openTM(id)}
 function savT(){var nm=document.getElementById('mTn').value.trim();if(!nm){toast('Vyplň název!');return}
 var note=document.getElementById('mTno').value.trim(),pr=parseInt(document.getElementById('mTp').value)||0;
 var id=wkId(wO);
 if(eId){db.collection('weeks').doc(id).collection('tasks').doc(eId).update({name:nm,note:note,price:pr});toast('Upraveno!')}
+else if(tScope==='week'){var batch=db.batch();
+for(var d=0;d<5;d++){var ref=db.collection('weeks').doc(id).collection('tasks').doc();
+batch.set(ref,{name:nm,note:note,price:pr,day:d,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}
+batch.commit().then(function(){toast('Úkol přidán na celý týden!')});db.collection('weeks').doc(id).set({created:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
 else{db.collection('weeks').doc(id).collection('tasks').add({name:nm,note:note,price:pr,day:sD,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast('Úkol přidán!')}
 clM('mT')}
 function togT(id,v){
