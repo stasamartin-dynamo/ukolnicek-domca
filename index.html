@@ -642,7 +642,7 @@ function loadBn(){
 if(us.bn)us.bn();
 us.bn=db.collection('bonus_tasks').orderBy('createdAt','desc').onSnapshot(function(s){
 window._bnTasks=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});
-renderBL();
+renderBL();renderHomeGrid();
 var cnt=0;window._bnTasks.forEach(function(b){if(!b.done)cnt++});
 var el=document.getElementById('bW');
 if(el)el.innerHTML='<div class="sr"><div class="sc"><div class="sv b">'+window._bnTasks.length+'</div><div class="sll">Celkem</div></div><div class="sc"><div class="sv y">'+cnt+'</div><div class="sll">Aktivní</div></div></div>'})}
@@ -759,7 +759,13 @@ document.getElementById('spDone').textContent=ap;document.getElementById('spPend
 function renderHomeGrid(){
 var h='';
 h+='<div class="hcard" onclick="bnav(\'learn\')"><div class="hcard-accent" style="background:var(--ac)"></div><div class="hcard-ico">📚</div><div class="hcard-title">Učení</div><div class="hcard-sub">Matika, AJ, ČJ...</div></div>';
-h+='<div class="hcard" onclick="nav(\'bonus\')"><div class="hcard-accent" style="background:var(--gold)"></div><div class="hcard-ico">⭐</div><div class="hcard-title">Bonusy</div><div class="hcard-sub">Bonusové úkoly</div></div>';
+var bonuses=window._bnTasks||[];var activeBn=bonuses.filter(function(b){return !b.done});
+var bonusSub='';
+if(activeBn.length){bonusSub='<div style="font-size:12px;color:var(--t2);margin-top:4px">';
+activeBn.slice(0,4).forEach(function(b){bonusSub+='<div style="padding:2px 0">• '+esc(b.name)+(b.price?' <span style="color:var(--gold)">'+b.price+' Kč</span>':'')+'</div>'});
+if(activeBn.length>4)bonusSub+='<div style="padding:2px 0;color:var(--t3)">+ dalších '+(activeBn.length-4)+'</div>';
+bonusSub+='</div>'}
+h+='<div class="hcard" onclick="nav(\'bonus\')"><div class="hcard-accent" style="background:var(--gold)"></div><div class="hcard-ico">⭐</div><div class="hcard-title">Bonusy <span style="font-size:13px;font-weight:400;color:var(--t2)">('+activeBn.length+')</span></div><div class="hcard-sub">'+(bonusSub||'Žádné aktivní')+'</div></div>';
 document.getElementById('homeGrid').innerHTML=h}
 
 // ===== LEARNING MODULE =====
