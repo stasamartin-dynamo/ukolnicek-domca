@@ -312,14 +312,13 @@ html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:var(--
 <div class="phone-card"><div class="wal-l">📱 Telefon zítra</div><div class="wal-a" id="phoneA">0 min</div>
 <div class="phone-min-detail" id="phoneDet">Za schválené učení</div></div>
 
-<div class="home-grid" id="homeGrid"></div>
-
-<div class="sec"><span class="sec-t">📊 Tento týden</span></div>
-<div id="statsInline"></div>
-
+<div class="sec"><span class="sec-t">📋 Denní úkoly</span></div>
 <div class="wk-nav"><button onclick="chgW(-1)">‹</button><span class="wk-lbl" id="wLb"></span><button onclick="chgW(1)">›</button></div>
 <div class="day-tiles" id="dayT"></div>
 <button class="fill-btn" id="fillB" onclick="fillW()" style="display:none">📋 Vyplnit úkoly na tento týden</button>
+<div id="statsInline"></div>
+
+<div class="home-grid" id="homeGrid"></div>
 
 <div class="sec"><span class="sec-t">🎯 Dlouhodobé cíle</span><button class="sec-btn" id="addGoalB" onclick="openGM()" style="display:none">+ Cíl</button></div>
 <div id="goalsA"></div>
@@ -451,7 +450,7 @@ var us={};
 var PINS={child:'1234',parent:'3385'};
 var DS=['Pondělí','Úterý','Středa','Čtvrtek','Pátek'];
 var DIC=['🚀','⚡','🔥','💎','🏆'];
-var DTS=['Myčka','Kuchyň','Nádobí','Suška','Koše','Vysávat'];
+var DTS=['Myčka','Nádobí v kuchyni','Koše','Pračka','Suška','Vysávat'];
 var DEFAULT_SUBJECTS=[
 {name:'Matika',emoji:'🔢',duration:20,category:'math'},
 {name:'Angličtina',emoji:'🇬🇧',duration:20,category:'eng'},
@@ -634,7 +633,7 @@ if(!cP()){toast('Pouze rodiče!');return}
 var id=wkId(wO),batch=db.batch();
 for(var d=0;d<5;d++){for(var t=0;t<DTS.length;t++){
 var ref=db.collection('weeks').doc(id).collection('tasks').doc();
-batch.set(ref,{name:DTS[t],note:'',price:5,day:d,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}}
+batch.set(ref,{name:DTS[t],note:'',price:7,day:d,done:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}}
 db.collection('weeks').doc(id).set({created:firebase.firestore.FieldValue.serverTimestamp()});
 batch.commit().then(function(){toast('Úkoly vyplněny! 📋')})}
 
