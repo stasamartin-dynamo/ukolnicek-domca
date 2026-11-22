@@ -988,6 +988,26 @@ else if(type==='goal'){db.collection('goals_list').doc(id).update({img:''});toas
 function clM(id){document.getElementById(id).classList.remove('on');eId=null;eBnId=null;eGId=null}
 db.collection('settings').doc('wallet').get().then(function(d){if(!d.exists)db.collection('settings').doc('wallet').set({balance:0})});
 
+// ONE-TIME DATA FIX: set wallet to 7100, delete all goals, mark as done
+db.collection('settings').doc('data_fix_v2').get().then(function(d){
+if(!d.exists){
+// Set wallet to 7100
+db.collection('settings').doc('wallet').set({balance:7100});
+// Delete all existing goals
+db.collection('goals_list').get().then(function(s){
+var batch=db.batch();
+s.docs.forEach(function(doc){batch.delete(doc.ref)});
+// Also reset goals_seeded so user can add fresh goals
+batch.delete(db.collection('settings').doc('goals_seeded'));
+batch.set(db.collection('settings').doc('data_fix_v2'),{done:true,at:new Date().toISOString()});
+batch.commit().then(function(){console.log('Data fix v2 applied: wallet=7100, goals cleared')})});
+// Clear old history entries that don't match
+db.collection('history').get().then(function(s){
+var batch=db.batch();
+s.docs.forEach(function(doc){batch.delete(doc.ref)});
+batch.commit()});
+}});
+
 </script>
 </body>
 </html>
