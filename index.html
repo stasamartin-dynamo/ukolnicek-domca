@@ -893,8 +893,10 @@ var ds=getLearnDateStr();
 var key=nm.toLowerCase().replace(/[^a-z0-9]/g,'_');
 var upd={};
 upd['subjects.'+key]={name:nm,emoji:emoji,duration:dur,category:'other',completed:false,approved:null,startedAt:null,completedAt:null};
-db.collection('learning').doc(ds).set({date:ds,subjects:{}},{merge:true}).then(function(){
-db.collection('learning').doc(ds).update(upd).then(function(){toast('Předmět přidán!');clM('mS');renderLearn()})})}
+db.collection('learning').doc(ds).get().then(function(doc){
+if(!doc.exists){var data={date:ds,subjects:{}};data.subjects[key]=upd['subjects.'+key];
+db.collection('learning').doc(ds).set(data).then(function(){toast('Předmět přidán!');clM('mS');renderLearn()})}
+else{db.collection('learning').doc(ds).update(upd).then(function(){toast('Předmět přidán!');clM('mS');renderLearn()})}})}
 
 function delSubj(ds,key){if(!confirm('Smazat předmět?'))return;
 var upd={};upd['subjects.'+key]=firebase.firestore.FieldValue.delete();
